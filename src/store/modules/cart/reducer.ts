@@ -1,15 +1,17 @@
 import { Reducer } from "redux";
 import produce from "immer";
-import { ICartState } from "./types";
+import { ICartState, ActionTypes } from "./types";
+import { act } from "react-dom/test-utils";
 
 const INITTIAL_STATE: ICartState = {
   items: [],
+  failedStockCheck: [],
 };
 
 const cart: Reducer<ICartState> = (state = INITTIAL_STATE, action) => {
   return produce(state, (draft) => {
     switch (action.type) {
-      case "ADD_PRODUCT_TO_CART": {
+      case ActionTypes.addProductToCartSuccess: {
         const { product } = action.payload;
 
         const productInCartIndex = draft.items.findIndex(
@@ -24,6 +26,11 @@ const cart: Reducer<ICartState> = (state = INITTIAL_STATE, action) => {
             quantity: 1,
           });
         }
+
+        break;
+      }
+      case ActionTypes.addProductToCartFailure: {
+        draft.failedStockCheck.push(action.payload.productId);
 
         break;
       }
